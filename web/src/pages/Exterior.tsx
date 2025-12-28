@@ -316,7 +316,7 @@ export default function Exterior() {
             onActivate={commitEnteredInterior} // ✅ HERE
         />
         <HotspotBox
-            href="https://instagram.com"
+            href="/cv.pdf"
             position={[1.7, 4.3, 1.7]}
             size={[1.1, 1.8, 0.6]}
             opacity={0.008}                 // set to 0 later, no renaming needed
