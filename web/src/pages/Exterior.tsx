@@ -16,7 +16,8 @@ function TorusPulse({
   radius = 0.9,
   tube = 0.04,
   maxOpacity = 0.5,
-  pulseSeconds = 1.2,     // total duration of one full pulse (in+out)
+  pulseSeconds = 1.4,     // total duration of one full pulse (in+out)
+  pulseVertOffset = 0.2,
   scaleFrom = 0.85,
   scaleTo = 1.55,
   emissive = "#FFB3A7",
@@ -27,6 +28,7 @@ function TorusPulse({
   tube?: number;
   maxOpacity?: number;
   pulseSeconds?: number;
+  pulseVertOffset?: number;
   scaleFrom?: number;
   scaleTo?: number;
   emissive?: string;
@@ -56,7 +58,7 @@ function TorusPulse({
     const phase = (tRef.current % pulseSeconds) / pulseSeconds;
 
     // triangle wave: 0 -> 1 -> 0
-    const tri = phase < 0.5 ? phase * 2 : (1 - phase) * 2;
+    const tri = Math.max(0, phase < 0.5 ? phase * 2 - pulseVertOffset : (1 - phase) * 2 - pulseVertOffset);
 
     // opacity: 0 -> maxOpacity -> 0
     material.opacity = tri * maxOpacity;
@@ -71,6 +73,7 @@ function TorusPulse({
     <mesh 
     ref={meshRef} 
     position={position} 
+    rotation={[0, Math.PI/4, 0]}
     material={material}
     raycast={() => null} 
     >
@@ -297,7 +300,7 @@ export default function Exterior() {
         {/* 🔔 Onboarding pulse */}
         {showOnboarding && (
           <>
-            <TorusPulse position={[5, 0.25, 5]} />
+            <TorusPulse position={[2, 4.3, 2]} />
             {/* add another TorusPulse if you want */}
           </>
         )}
