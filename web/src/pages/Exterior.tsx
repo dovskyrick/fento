@@ -1,87 +1,16 @@
-import { Canvas , useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Text3D, Center } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import { useRef, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useNavigate } from "react-router-dom";
 
+import { PulseRing } from "@/components/effects/PulseRing"
 
 
 
 
 
-
-
-function TorusPulse({
-  position,
-  radius = 0.9,
-  tube = 0.04,
-  maxOpacity = 0.5,
-  pulseSeconds = 1.4,     // total duration of one full pulse (in+out)
-  pulseVertOffset = 0.2,
-  scaleFrom = 0.85,
-  scaleTo = 1.55,
-  emissive = "#FFB3A7",
-  emissiveIntensity = 1.2,
-}: {
-  position: [number, number, number];
-  radius?: number;
-  tube?: number;
-  maxOpacity?: number;
-  pulseSeconds?: number;
-  pulseVertOffset?: number;
-  scaleFrom?: number;
-  scaleTo?: number;
-  emissive?: string;
-  emissiveIntensity?: number;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const tRef = useRef(0);
-
-  // Create material once (not every render)
-  const material = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        color: new THREE.Color("#000000"), // keep surface dark; let emissive drive it
-        emissive: new THREE.Color(emissive),
-        emissiveIntensity,
-      }),
-    [emissive, emissiveIntensity]
-  );
-
-  useFrame((_, delta) => {
-    tRef.current += delta;
-
-    // phase goes 0..1 repeatedly
-    const phase = (tRef.current % pulseSeconds) / pulseSeconds;
-
-    // triangle wave: 0 -> 1 -> 0
-    const tri = Math.max(0, phase < 0.5 ? phase * 2 - pulseVertOffset : (1 - phase) * 2 - pulseVertOffset);
-
-    // opacity: 0 -> maxOpacity -> 0
-    material.opacity = tri * maxOpacity;
-
-    // scale: scaleFrom -> scaleTo (monotonic) during the pulse
-    // If you want it to only grow (not shrink), tie it to phase (0..1)
-    const s = scaleFrom + (scaleTo - scaleFrom) * phase;
-    meshRef.current.scale.setScalar(s);
-  });
-
-  return (
-    <mesh 
-    ref={meshRef} 
-    position={position} 
-    rotation={[0, Math.PI/4, 0]}
-    material={material}
-    raycast={() => null} 
-    >
-      <torusGeometry args={[radius, tube, 24, 96]} />
-    </mesh>
-  );
-}
 
 
 
@@ -304,7 +233,7 @@ export default function Exterior() {
         {/* 🔔 Onboarding pulse */}
         {showOnboarding && (
           <>
-            <TorusPulse position={[2, 4.3, 2]} />
+            <PulseRing position={[2, 4.3, 2]} />
             {/* add another TorusPulse if you want */}
           </>
         )}
