@@ -3,7 +3,6 @@ import { useGLTF, OrbitControls, Text3D, Center } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { useRef, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
-import { useNavigate } from "react-router-dom";
 
 
 
@@ -196,14 +195,14 @@ function Credits() {
         pointerEvents: 'none',
       }}
     >
-      "SKVOT Lesson / Low-Poly Futuristic Building" (https://skfb.ly/oZB6v) by jsandorblendercourse is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+      
     </div>
   )
 }
 
 function Model() {
-  const { scene } = useGLTF('/building.glb')
-  return <primitive object={scene} scale={1} />
+  const { scene } = useGLTF('/desk.glb')
+  return <primitive object={scene} scale={0.05} />
 }
 
 
@@ -215,8 +214,6 @@ const orbitControlsProps = {
   minPolarAngle: Math.PI / 6,
   maxPolarAngle: Math.PI * 0.48,
 } as const;
-
-
 
 function Labels3D() {
   return (
@@ -270,7 +267,6 @@ function Labels3D() {
 
 
 export default function Exterior() {
-  const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
   useEffect(() => {
     const hasSeen = localStorage.getItem("enteredInteriorOnce") === "1";
@@ -309,7 +305,7 @@ export default function Exterior() {
           </>
         )}
         <HotspotBox
-            href="https://www.instagram.com/nhecus/"
+            href="https://instagram.com/nhecus"
             position={[1.7, 1.05, 1.7]}
             size={[1.1, 1.8, 0.6]}
             opacity={0.008}                 // set to 0 later, no renaming needed
@@ -317,22 +313,18 @@ export default function Exterior() {
             emissiveColor="#FFB3A7"         // matches your ART text vibe
             emissiveIntensity={0.15}
             hoverEmissiveIntensity={9}
-            onActivate={commitEnteredInterior}
+            onActivate={commitEnteredInterior} // ✅ HERE
         />
         <HotspotBox
-            href="/engineering-portfolio"
+            href="/cv.pdf"
             position={[1.7, 4.3, 1.7]}
-            openInNewTab={false}
             size={[1.1, 1.8, 0.6]}
             opacity={0.008}                 // set to 0 later, no renaming needed
             baseColor="#ffffff"
             emissiveColor="#F3F2EE"         // matches your ART text vibe
             emissiveIntensity={0.15}
             hoverEmissiveIntensity={13}
-            onActivate={() => {
-              commitEnteredInterior();
-              navigate("/office");          // ✅ THIS is the redirect
-            }}
+            onActivate={commitEnteredInterior} // ✅ HERE
         />
         </Canvas>
       
