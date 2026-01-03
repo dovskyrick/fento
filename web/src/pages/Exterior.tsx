@@ -2,98 +2,11 @@ import { Canvas } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Text3D, Center } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { useEffect, useMemo, useState } from "react";
-import * as THREE from "three";
+
 import { useNavigate } from "react-router-dom";
 
 import { PulseRing } from "@/components/effects/PulseRing"
-
-
-
-
-
-
-
-
-
-function HotspotBox({
-  href,                          // external link
-  position,
-  size,
-  opacity = 0.12,               // 0 makes it invisible but still clickable
-  baseColor = "#ffffff",
-  emissiveColor = "#ffffff",
-  emissiveIntensity = 0.2,
-  hoverEmissiveIntensity = 1.2,
-  hoverScale = 1.15,
-  openInNewTab = true,
-  onActivate,
-}: {
-  href: string;
-  position: [number, number, number];
-  size: [number, number, number];
-  opacity?: number;
-  baseColor?: string;
-  emissiveColor?: string;
-  emissiveIntensity?: number;
-  hoverEmissiveIntensity?: number;
-  hoverScale?: number;
-  openInNewTab?: boolean;
-  onActivate?: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-
-  // Create the material once (unless these specific deps change).
-  const material = useMemo(() => {
-    const m = new THREE.MeshStandardMaterial({
-      transparent: opacity < 1,
-      opacity,
-      color: new THREE.Color(baseColor),
-      emissive: new THREE.Color(emissiveColor),
-      emissiveIntensity,
-      depthWrite: false,
-    });
-    return m;
-  }, [opacity, baseColor, emissiveColor, emissiveIntensity]);
-
-  // Update only the intensity on hover (cheap) without recreating the material.
-  if (material.emissiveIntensity !== (hovered ? hoverEmissiveIntensity : emissiveIntensity)) {
-    material.emissiveIntensity = hovered ? hoverEmissiveIntensity : emissiveIntensity;
-  }
-
-  const scale: [number, number, number] = hovered
-    ? [hoverScale, hoverScale, hoverScale]
-    : [1, 1, 1];
-
-  return (
-    <mesh
-      position={position}
-      scale={scale}
-      rotation={[0, Math.PI/4, 0]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        setHovered(false);
-        document.body.style.cursor = "auto";
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onActivate?.(); // ✅ call parent callback if provided
-        if (openInNewTab) {
-          window.open(href, "_blank", "noopener,noreferrer");
-        } else {
-          window.location.href = href;
-        }
-      }}
-    >
-      <boxGeometry args={size} />
-      <primitive object={material} attach="material" />
-    </mesh>
-  );
-}
+import { Clickable } from "@/components/interaction/Clickable"
 
 
 
@@ -237,7 +150,7 @@ export default function Exterior() {
             {/* add another TorusPulse if you want */}
           </>
         )}
-        <HotspotBox
+        <Clickable
             href="https://www.instagram.com/nhecus/"
             position={[1.7, 1.05, 1.7]}
             size={[1.1, 1.8, 0.6]}
@@ -248,8 +161,7 @@ export default function Exterior() {
             hoverEmissiveIntensity={9}
             onActivate={commitEnteredInterior}
         />
-        <HotspotBox
-            href="/engineering-portfolio"
+        <Clickable
             position={[1.7, 4.3, 1.7]}
             openInNewTab={false}
             size={[1.1, 1.8, 0.6]}
@@ -258,10 +170,8 @@ export default function Exterior() {
             emissiveColor="#F3F2EE"         // matches your ART text vibe
             emissiveIntensity={0.15}
             hoverEmissiveIntensity={13}
-            onActivate={() => {
-              commitEnteredInterior();
-              navigate("/office");          // ✅ THIS is the redirect
-            }}
+            onActivate={commitEnteredInterior}
+            onClick={() => navigate("/office")}   // ✅ SPA route change, no reload
         />
         </Canvas>
       
