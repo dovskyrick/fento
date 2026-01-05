@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Text3D, Center } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -147,7 +147,6 @@ export default function Exterior() {
         {showOnboarding && (
           <>
             <PulseRing position={[2, 4.3, 2]} />
-            {/* add another TorusPulse if you want */}
           </>
         )}
         <Clickable
@@ -171,7 +170,7 @@ export default function Exterior() {
             emissiveIntensity={0.15}
             hoverEmissiveIntensity={13}
             onActivate={commitEnteredInterior}
-            onClick={() => navigate("/office")}   // ✅ SPA route change, no reload
+            onClick={() => navigate("/engineering-portfolio")}   // ✅ SPA route change, no reload
         />
         </Canvas>
       

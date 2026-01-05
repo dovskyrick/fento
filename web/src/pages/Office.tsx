@@ -1,169 +1,11 @@
-import { Canvas , useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Text3D, Center } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import { useRef, useEffect, useMemo, useState } from "react";
-import * as THREE from "three";
+import { useEffect, useState } from "react";
 
 
-
-
-
-
-
-
-function TorusPulse({
-  position,
-  radius = 0.9,
-  tube = 0.04,
-  maxOpacity = 0.5,
-  pulseSeconds = 1.4,     // total duration of one full pulse (in+out)
-  pulseVertOffset = 0.2,
-  scaleFrom = 0.85,
-  scaleTo = 1.55,
-  emissive = "#FFB3A7",
-  emissiveIntensity = 1.2,
-}: {
-  position: [number, number, number];
-  radius?: number;
-  tube?: number;
-  maxOpacity?: number;
-  pulseSeconds?: number;
-  pulseVertOffset?: number;
-  scaleFrom?: number;
-  scaleTo?: number;
-  emissive?: string;
-  emissiveIntensity?: number;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const tRef = useRef(0);
-
-  // Create material once (not every render)
-  const material = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        color: new THREE.Color("#000000"), // keep surface dark; let emissive drive it
-        emissive: new THREE.Color(emissive),
-        emissiveIntensity,
-      }),
-    [emissive, emissiveIntensity]
-  );
-
-  useFrame((_, delta) => {
-    tRef.current += delta;
-
-    // phase goes 0..1 repeatedly
-    const phase = (tRef.current % pulseSeconds) / pulseSeconds;
-
-    // triangle wave: 0 -> 1 -> 0
-    const tri = Math.max(0, phase < 0.5 ? phase * 2 - pulseVertOffset : (1 - phase) * 2 - pulseVertOffset);
-
-    // opacity: 0 -> maxOpacity -> 0
-    material.opacity = tri * maxOpacity;
-
-    // scale: scaleFrom -> scaleTo (monotonic) during the pulse
-    // If you want it to only grow (not shrink), tie it to phase (0..1)
-    const s = scaleFrom + (scaleTo - scaleFrom) * phase;
-    meshRef.current.scale.setScalar(s);
-  });
-
-  return (
-    <mesh 
-    ref={meshRef} 
-    position={position} 
-    rotation={[0, Math.PI/4, 0]}
-    material={material}
-    raycast={() => null} 
-    >
-      <torusGeometry args={[radius, tube, 24, 96]} />
-    </mesh>
-  );
-}
-
-
-
-
-function HotspotBox({
-  href,                          // external link
-  position,
-  size,
-  opacity = 0.12,               // 0 makes it invisible but still clickable
-  baseColor = "#ffffff",
-  emissiveColor = "#ffffff",
-  emissiveIntensity = 0.2,
-  hoverEmissiveIntensity = 1.2,
-  hoverScale = 1.15,
-  openInNewTab = true,
-  onActivate,
-}: {
-  href: string;
-  position: [number, number, number];
-  size: [number, number, number];
-  opacity?: number;
-  baseColor?: string;
-  emissiveColor?: string;
-  emissiveIntensity?: number;
-  hoverEmissiveIntensity?: number;
-  hoverScale?: number;
-  openInNewTab?: boolean;
-  onActivate?: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-
-  // Create the material once (unless these specific deps change).
-  const material = useMemo(() => {
-    const m = new THREE.MeshStandardMaterial({
-      transparent: opacity < 1,
-      opacity,
-      color: new THREE.Color(baseColor),
-      emissive: new THREE.Color(emissiveColor),
-      emissiveIntensity,
-      depthWrite: false,
-    });
-    return m;
-  }, [opacity, baseColor, emissiveColor, emissiveIntensity]);
-
-  // Update only the intensity on hover (cheap) without recreating the material.
-  if (material.emissiveIntensity !== (hovered ? hoverEmissiveIntensity : emissiveIntensity)) {
-    material.emissiveIntensity = hovered ? hoverEmissiveIntensity : emissiveIntensity;
-  }
-
-  const scale: [number, number, number] = hovered
-    ? [hoverScale, hoverScale, hoverScale]
-    : [1, 1, 1];
-
-  return (
-    <mesh
-      position={position}
-      scale={scale}
-      rotation={[0, Math.PI/4, 0]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        setHovered(false);
-        document.body.style.cursor = "auto";
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onActivate?.(); // ✅ call parent callback if provided
-        if (openInNewTab) {
-          window.open(href, "_blank", "noopener,noreferrer");
-        } else {
-          window.location.href = href;
-        }
-      }}
-    >
-      <boxGeometry args={size} />
-      <primitive object={material} attach="material" />
-    </mesh>
-  );
-}
+import { Clickable } from "@/components/interaction/Clickable"
+import { PulseRing } from "@/components/effects/PulseRing"
 
 
 
@@ -266,7 +108,7 @@ function Labels3D() {
 }
 
 
-export default function Exterior() {
+export default function Office() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   useEffect(() => {
     const hasSeen = localStorage.getItem("enteredInteriorOnce") === "1";
@@ -300,11 +142,11 @@ export default function Exterior() {
         {/* 🔔 Onboarding pulse */}
         {showOnboarding && (
           <>
-            <TorusPulse position={[2, 4.3, 2]} />
+            <PulseRing position={[2, 4.3, 2]} />
             {/* add another TorusPulse if you want */}
           </>
         )}
-        <HotspotBox
+        <Clickable
             href="https://instagram.com/nhecus"
             position={[1.7, 1.05, 1.7]}
             size={[1.1, 1.8, 0.6]}
@@ -315,7 +157,7 @@ export default function Exterior() {
             hoverEmissiveIntensity={9}
             onActivate={commitEnteredInterior} // ✅ HERE
         />
-        <HotspotBox
+        <Clickable
             href="/cv.pdf"
             position={[1.7, 4.3, 1.7]}
             size={[1.1, 1.8, 0.6]}
@@ -327,7 +169,6 @@ export default function Exterior() {
             onActivate={commitEnteredInterior} // ✅ HERE
         />
         </Canvas>
-      
       <Credits />
     </>
   )
