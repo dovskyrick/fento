@@ -5,6 +5,7 @@ export type ClickableProps = {
   href?: string;
   position: [number, number, number];
   size: [number, number, number];
+  rotation?: [number, number, number];
   opacity?: number;
   baseColor?: string;
   emissiveColor?: string;
@@ -20,6 +21,7 @@ export function Clickable({
   href,
   position,
   size,
+  rotation = [0, Math.PI / 4, 0],
   opacity = 0.12,
   baseColor = "#ffffff",
   emissiveColor = "#ffffff",
@@ -57,7 +59,7 @@ export function Clickable({
     <mesh
       position={position}
       scale={scale}
-      rotation={[0, Math.PI / 4, 0]}
+      rotation={rotation}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);

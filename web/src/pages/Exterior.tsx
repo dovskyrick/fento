@@ -222,6 +222,7 @@ export default function Exterior() {
             href="https://www.instagram.com/nhecus/"
             position={[1.7, 1.05, 1.7]}
             size={[1.1, 1.8, 0.6]}
+            rotation={[0, Math.PI / 4, 0]}  // TODO: adjust rotation as needed
             opacity={0.008}                 // set to 0 later, no renaming needed
             baseColor="#ffffff"
             emissiveColor="#FFB3A7"         // matches your ART text vibe
@@ -233,6 +234,7 @@ export default function Exterior() {
             position={[1.7, 4.3, 1.7]}
             openInNewTab={false}
             size={[1.1, 1.8, 0.6]}
+            rotation={[0, Math.PI / 4, 0]}  // TODO: adjust rotation as needed
             opacity={0.008}                 // set to 0 later, no renaming needed
             baseColor="#ffffff"
             emissiveColor="#F3F2EE"         // matches your ART text vibe
