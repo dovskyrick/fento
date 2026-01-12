@@ -43,6 +43,27 @@ function Credits() {
   )
 }
 
+function Instructions() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '70px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        color: 'white',
+        fontSize: '18px',
+        opacity: 0.85,
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        pointerEvents: 'none',
+        textAlign: 'center',
+      }}
+    >
+      Click the doors to enter my portfolios
+    </div>
+  )
+}
+
 function Model() {
   const { scene } = useGLTF('/building.glb')
   return <primitive object={scene} scale={1} />
@@ -174,6 +195,7 @@ export default function Exterior() {
         />
         </Canvas>
       
+      <Instructions />
       <Credits />
     </>
   )
