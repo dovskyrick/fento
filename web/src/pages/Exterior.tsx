@@ -8,6 +8,26 @@ import { useNavigate } from "react-router-dom";
 import { PulseRing } from "@/components/effects/PulseRing"
 import { Clickable } from "@/components/interaction/Clickable"
 
+// Hook to detect mobile/narrow screens
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < breakpoint);
+    };
+
+    // Check on mount
+    checkMobile();
+
+    // Listen for resize
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
 
 
 
@@ -81,10 +101,31 @@ const orbitControlsProps = {
 
 
 
-function Labels3D() {
+function Labels3D({ isMobile }: { isMobile: boolean }) {
+  // Desktop positions (original)
+  const desktopArtPos: [number, number, number] = [5, 1, 2];
+  const desktopEngPos: [number, number, number] = [2, 4, 7];
+  
+  // Mobile positions - TODO: adjust these positions to align with doors
+  const mobileArtPos: [number, number, number] = [4, 0, 4]; // PLACEHOLDER - adjust me!
+  const mobileEngPos: [number, number, number] = [4, 6, 4]; // PLACEHOLDER - adjust me!
+
+  // Desktop rotations (original)
+  const desktopArtRot: [number, number, number] = [0, 0, 0];
+  const desktopEngRot: [number, number, number] = [0, Math.PI/2, 0];
+  
+  // Mobile rotations - TODO: adjust these rotations for mobile view
+  const mobileArtRot: [number, number, number] = [0, 0, 0]; // PLACEHOLDER - adjust me!
+  const mobileEngRot: [number, number, number] = [0, 0, 0]; // PLACEHOLDER - adjust me!
+
+  const artPos = isMobile ? mobileArtPos : desktopArtPos;
+  const engPos = isMobile ? mobileEngPos : desktopEngPos;
+  const artRot = isMobile ? mobileArtRot : desktopArtRot;
+  const engRot = isMobile ? mobileEngRot : desktopEngRot;
+
   return (
     <group>
-      <Center position={[5, 1, 2]} rotation={[0, 0, 0]}>
+      <Center position={artPos} rotation={artRot}>
         <Text3D
           font="/fonts/helvetiker_regular.typeface.json"
           size={0.55}
@@ -106,7 +147,7 @@ function Labels3D() {
         </Text3D>
       </Center>
 
-      <Center position={[2, 4, 7]} rotation={[0, Math.PI/2, 0]}>
+      <Center position={engPos} rotation={engRot}>
         <Text3D
           font="/fonts/helvetiker_regular.typeface.json"
           size={0.45}
@@ -134,7 +175,9 @@ function Labels3D() {
 
 export default function Exterior() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  
   useEffect(() => {
     const hasSeen = localStorage.getItem("enteredInteriorOnce") === "1";
   
@@ -153,6 +196,11 @@ export default function Exterior() {
     setShowOnboarding(false);
   };
 
+  // Adjust orbit controls for mobile - allow more zoom out
+  const orbitProps = {
+    ...orbitControlsProps,
+    maxDistance: isMobile ? 25 : orbitControlsProps.maxDistance, // More zoom out on mobile
+  };
 
   return (
     <>
@@ -160,8 +208,8 @@ export default function Exterior() {
         <ambientLight intensity={0.8} />
         <directionalLight position={[5, 5, 5]} />
         <Model />
-        <Labels3D />
-        <OrbitControls {...orbitControlsProps}/>
+        <Labels3D isMobile={isMobile} />
+        <OrbitControls {...orbitProps}/>
         <Effects />
 
         {/* 🔔 Onboarding pulse */}
