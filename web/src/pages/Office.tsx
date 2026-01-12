@@ -62,7 +62,9 @@ function Credits() {
   )
 }
 
-function Instructions() {
+function Instructions({ isMobile }: { isMobile: boolean }) {
+  const fontSize = isMobile ? 25 * 0.4 : 25; // 0.4x size on mobile
+  
   return (
     <div
       style={{
@@ -71,7 +73,7 @@ function Instructions() {
         left: '50%',
         transform: 'translateX(-50%)',
         color: 'white',
-        fontSize: '25px',
+        fontSize: `${fontSize}px`,
         opacity: 0.85,
         fontFamily: 'system-ui, -apple-system, sans-serif',
         pointerEvents: 'none',
@@ -89,13 +91,8 @@ function Instructions() {
 }
 
 function Model() {
-  try {
-    const { scene } = useGLTF('/desk.glb')
-    return <primitive object={scene} scale={0.05} />
-  } catch (error) {
-    console.error('Failed to load desk model:', error)
-    return null
-  }
+  const { scene } = useGLTF('/desk.glb')
+  return <primitive object={scene} scale={0.05} />
 }
 
 
@@ -132,15 +129,21 @@ export default function Office() {
     setShowOnboarding(false);
   };
 
-  // Adjust orbit controls for mobile - allow more zoom out
+  // Adjust orbit controls for mobile - allow more zoom out and less zoom in
   const orbitProps = {
     ...orbitControlsProps,
     maxDistance: isMobile ? 25 : orbitControlsProps.maxDistance, // More zoom out on mobile
+    minDistance: isMobile ? 4 : orbitControlsProps.minDistance, // Allow closer zoom on mobile
   };
+
+  // Adjust camera for mobile - closer and wider FOV to see the model better
+  const cameraConfig = isMobile 
+    ? { position: [8, 8, 8] as [number, number, number], fov: 60 }
+    : { position: [10, 10, 10] as [number, number, number], fov: 50 };
 
   return (
     <>
-      <Canvas dpr={[0.3, 0.7]} camera={{ position: [10, 10, 10], fov: 50 }}>
+      <Canvas dpr={[0.3, 0.7]} camera={cameraConfig}>
         <ambientLight intensity={0.8} />
         <directionalLight position={[5, 5, 5]} />
         <Model />
@@ -179,7 +182,7 @@ export default function Office() {
             onActivate={commitEnteredInterior} // ✅ HERE
         />
         </Canvas>
-      <Instructions />
+      <Instructions isMobile={isMobile} />
       <Credits />
     </>
   )
