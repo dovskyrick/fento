@@ -63,7 +63,9 @@ function Credits() {
   )
 }
 
-function Instructions() {
+function Instructions({ isMobile }: { isMobile: boolean }) {
+  const fontSize = isMobile ? 38 * 0.3 : 38; // 0.3x size on mobile
+  
   return (
     <div
       style={{
@@ -72,11 +74,15 @@ function Instructions() {
         left: '50%',
         transform: 'translateX(-50%)',
         color: 'white',
-        fontSize: '38px',
+        fontSize: `${fontSize}px`,
         opacity: 0.85,
         fontFamily: 'system-ui, -apple-system, sans-serif',
         pointerEvents: 'none',
         textAlign: 'center',
+        padding: '20px 40px',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderRadius: '8px',
+        backdropFilter: 'blur(4px)',
       }}
     >
       Click the doors to enter my portfolios
@@ -245,7 +251,7 @@ export default function Exterior() {
         />
         </Canvas>
       
-      <Instructions />
+      <Instructions isMobile={isMobile} />
       <Credits />
     </>
   )
