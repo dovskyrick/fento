@@ -104,19 +104,19 @@ const orbitControlsProps = {
 function Labels3D({ isMobile }: { isMobile: boolean }) {
   // Desktop positions (original)
   const desktopArtPos: [number, number, number] = [5, 1, 2];
-  const desktopEngPos: [number, number, number] = [2, 4, 7];
+  const desktopEngPos: [number, number, number] = [5, 4, 2];
   
   // Mobile positions - TODO: adjust these positions to align with doors
-  const mobileArtPos: [number, number, number] = [4, 0, 4]; // PLACEHOLDER - adjust me!
-  const mobileEngPos: [number, number, number] = [4, 6, 4]; // PLACEHOLDER - adjust me!
+  const mobileArtPos: [number, number, number] = [2, 0, 2]; // PLACEHOLDER - adjust me!
+  const mobileEngPos: [number, number, number] = [2, 6, 2]; // PLACEHOLDER - adjust me!
 
   // Desktop rotations (original)
   const desktopArtRot: [number, number, number] = [0, 0, 0];
-  const desktopEngRot: [number, number, number] = [0, Math.PI/2, 0];
+  const desktopEngRot: [number, number, number] = [0, 0, 0];
   
   // Mobile rotations - TODO: adjust these rotations for mobile view
-  const mobileArtRot: [number, number, number] = [0, 0, 0]; // PLACEHOLDER - adjust me!
-  const mobileEngRot: [number, number, number] = [0, 0, 0]; // PLACEHOLDER - adjust me!
+  const mobileArtRot: [number, number, number] = [0, Math.PI/4, 0]; // PLACEHOLDER - adjust me!
+  const mobileEngRot: [number, number, number] = [0, Math.PI/4, 0]; // PLACEHOLDER - adjust me!
 
   const artPos = isMobile ? mobileArtPos : desktopArtPos;
   const engPos = isMobile ? mobileEngPos : desktopEngPos;
