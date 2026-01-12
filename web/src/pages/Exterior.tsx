@@ -72,7 +72,7 @@ function Instructions() {
         left: '50%',
         transform: 'translateX(-50%)',
         color: 'white',
-        fontSize: '18px',
+        fontSize: '38px',
         opacity: 0.85,
         fontFamily: 'system-ui, -apple-system, sans-serif',
         pointerEvents: 'none',
